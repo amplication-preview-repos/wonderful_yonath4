@@ -1,0 +1,70 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model SubscriptionPlan {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  name        String?
+  price       Float?
+  updatedAt   DateTime @updatedAt
+  users       User[]
+}
+
+model Rating {
+  comment    String?
+  createdAt  DateTime  @default(now())
+  id         String    @id @default(cuid())
+  location   Location? @relation(fields: [locationId], references: [id])
+  locationId String?
+  rating     Int?
+  updatedAt  DateTime  @updatedAt
+  user       User?     @relation(fields: [userId], references: [id])
+  userId     String?
+}
+
+model Location {
+  address    String?
+  city       String?
+  createdAt  DateTime               @default(now())
+  features   EnumLocationFeatures[]
+  id         String                 @id @default(cuid())
+  latitude   Float?
+  longitude  Float?
+  name       String?
+  postalCode String?
+  ratings    Rating[]
+  typeField  EnumLocationTypeField?
+  updatedAt  DateTime               @updatedAt
+}
+
+model User {
+  createdAt          DateTime          @default(now())
+  email              String?           @unique
+  firstName          String?
+  fullName           String?
+  id                 String            @id @default(cuid())
+  lastName           String?
+  password           String
+  preferences        Json?
+  ratings            Rating[]
+  roles              Json
+  subscriptionPlan   SubscriptionPlan? @relation(fields: [subscriptionPlanId], references: [id])
+  subscriptionPlanId String?
+  updatedAt          DateTime          @updatedAt
+  username           String            @unique
+}
+
+enum EnumLocationFeatures {
+  Option1
+}
+
+enum EnumLocationTypeField {
+  Option1
+}
